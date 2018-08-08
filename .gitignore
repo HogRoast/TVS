@@ -63,3 +63,7 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# vim save files
+*.*~
+.*.*~
