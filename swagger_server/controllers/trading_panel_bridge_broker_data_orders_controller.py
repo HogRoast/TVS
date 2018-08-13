@@ -70,7 +70,7 @@ def accounts_account_id_orders_get(accountId):  # noqa: E501
 
     :rtype: InlineResponse2004
     """
-    return 'do some magic!'
+    return 'do some magic for orders GET (bridge)!'
 
 
 def accounts_account_id_orders_history_get(accountId, maxCount=None):  # noqa: E501
@@ -179,7 +179,7 @@ def accounts_account_id_orders_post(accountId, instrument, qty, side, type, limi
 
     :rtype: InlineResponse2005
     """
-    r = InlineResponse2005(Status.OK, None, InlineResponse2005D(None))
+    r = InlineResponse2005(Status.OK, None, InlineResponse2005D(101))
     return r
 
 

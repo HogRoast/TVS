@@ -62,7 +62,7 @@ def accounts_account_id_orders_get(accountId):  # noqa: E501
 
     :rtype: InlineResponse2004
     """
-    return 'do some magic!'
+    return 'do some magic orders GET (orders)!'
 
 
 def accounts_account_id_orders_history_get(accountId, maxCount=None):  # noqa: E501
