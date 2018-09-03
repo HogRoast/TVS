@@ -70,3 +70,6 @@ target/
 *~
 *.swp
 *.swo
+
+# Account config files
+swagger_server/ecn.accounts.ini
