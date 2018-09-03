@@ -1,6 +1,7 @@
 import connexion
 import six
 
+from swagger_server.gateways.gateway_factory import getGateway
 from swagger_server.models.bars_arrays import BarsArrays  # noqa: E501
 from swagger_server.models.inline_response200 import InlineResponse200  # noqa: E501
 from swagger_server.models.inline_response2001 import InlineResponse2001  # noqa: E501

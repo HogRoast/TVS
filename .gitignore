@@ -71,5 +71,5 @@ target/
 *.swp
 *.swo
 
-# Account config files
-swagger_server/ecn.accounts.ini
+# ecn config files
+swagger_server/gateways/binance.ini

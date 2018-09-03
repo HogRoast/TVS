@@ -1,0 +1,34 @@
+{
+    'exchange_info' : {
+        'name'          : 'TestEx',
+        'description'   : 'A dummy exchange used for testing purposes'
+    },
+    'permissions' : {
+        'accountId_example' : {
+            'instruments' : (
+                'TestInst1',
+            )
+        },
+    },
+    'instruments' : ({
+        'name'          : 'TestInst1',
+        'description'   : 'Dummy instrument1 for the dummy exchange',
+        'min_qty'       : 0.5,
+        'max_qty'       : 100,
+        'qty_step'      : 0.1,
+        'pip_size'      : 0.01,
+        'pip_value'     : 10,
+        'min_tick'      : 0.01,
+        'lot_size'      : 5
+    },{
+        'name'          : 'TestInst2',
+        'description'   : 'Dummy instrument2 for the dummy exchange',
+        'min_qty'       : 0.5,
+        'max_qty'       : 100,
+        'qty_step'      : 0.1,
+        'pip_size'      : 0.01,
+        'pip_value'     : 10,
+        'min_tick'      : 0.01,
+        'lot_size'      : 5
+    })
+}

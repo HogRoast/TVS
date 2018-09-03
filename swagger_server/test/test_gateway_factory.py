@@ -1,5 +1,6 @@
-from swagger_server.gateways.gateway_factory import getGateway, NoSuchEcnError
+from swagger_server.gateways.gateway_factory import getGateway, NoSuchEcnError, getAllGateways
 from swagger_server.gateways.binance import BinanceGwy
+from swagger_server.gateways.test_exchange import TestGwy
 from swagger_server.test import BaseTestCase
 
 class TestGatewayFactory(BaseTestCase):
@@ -16,6 +17,13 @@ class TestGatewayFactory(BaseTestCase):
         x = getGateway('Binance')
         y = getGateway('Binance')
         self.assertIs(x, y)
+
+    def test_getAllGateways(self):
+        gwys = getAllGateways()
+        self.assertEqual(len(gwys), 2)
+        self.assertTrue(isinstance(gwys[0], BinanceGwy))
+        self.assertTrue(isinstance(gwys[1], TestGwy))
+
 
 if __name__ == '__main__':
     import unittest
