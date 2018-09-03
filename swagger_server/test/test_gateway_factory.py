@@ -12,6 +12,10 @@ class TestGatewayFactory(BaseTestCase):
             getGateway('Nonsense')
         self.assertEqual(cm.exception.message, 'No such gateway for ecn : Nonsense')
 
+    def test_getGateway_SameInstance(self):
+        x = getGateway('Binance')
+        y = getGateway('Binance')
+        self.assertIs(x, y)
 
 if __name__ == '__main__':
     import unittest
