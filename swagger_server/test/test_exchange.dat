@@ -5,30 +5,105 @@
     },
     'permissions' : {
         'accountId_example' : {
-            'instruments' : (
+            'instruments' : [
                 'TestInst1',
-            )
+            ]
         },
     },
-    'instruments' : ({
-        'name'          : 'TestInst1',
-        'description'   : 'Dummy instrument1 for the dummy exchange',
-        'min_qty'       : 0.5,
-        'max_qty'       : 100,
-        'qty_step'      : 0.1,
-        'pip_size'      : 0.01,
-        'pip_value'     : 10,
-        'min_tick'      : 0.01,
-        'lot_size'      : 5
-    },{
-        'name'          : 'TestInst2',
-        'description'   : 'Dummy instrument2 for the dummy exchange',
-        'min_qty'       : 0.5,
-        'max_qty'       : 100,
-        'qty_step'      : 0.1,
-        'pip_size'      : 0.01,
-        'pip_value'     : 10,
-        'min_tick'      : 0.01,
-        'lot_size'      : 5
-    })
+    'instruments' : {
+        'TestInst1': {
+            'name'          : 'TestInst1',
+            'description'   : 'Dummy instrument1 for the dummy exchange',
+            'min_qty'       : 0.5,
+            'max_qty'       : 100.0,
+            'qty_step'      : 0.1,
+            'pip_size'      : 0.01,
+            'pip_value'     : 10.0,
+            'min_tick'      : 0.01,
+            'lot_size'      : 5.0
+            },
+        'TestInst2': {
+            'name'          : 'TestInst2',
+            'description'   : 'Dummy instrument2 for the dummy exchange',
+            'min_qty'       : 0.5,
+            'max_qty'       : 100.0,
+            'qty_step'      : 0.1,
+            'pip_size'      : 0.01,
+            'pip_value'     : 10.0,
+            'min_tick'      : 0.01,
+            'lot_size'      : 5.0
+            },
+        },
+        'executions' : {
+        'accountId_example' : [{
+            'id'            : '1223',
+            'instrument'    : 'TestInst1',
+            'price'         : 101.11,
+            'time'          : 1023532.5,
+            'qty'           : 10.0,
+            'side'          : 'buy'
+        },{
+            'id'            : '1224',
+            'instrument'    : 'TestInst1',
+            'price'         : 101.12,
+            'time'          : 1023544.7,
+            'qty'           : 15.0,
+            'side'          : 'buy'
+        },{
+            'id'            : '1225',
+            'instrument'    : 'TestInst2',
+            'price'         : 99.45,
+            'time'          : 1024563.7,
+            'qty'           : 12.0,
+            'side'          : 'sell'
+        }],
+    },
+    'orders' : {
+        'accountId_example'     : [{
+            'id'                : '123',
+            'instrument'        : 'TestInst1',
+            'qty'               : 40.0,
+            'side'              : 'buy',
+            'type'              : 'limit',
+            'filled_qty'        : 20.0,
+            'avg_price'         : 100.32,
+            'limit_price'       : 100.0,
+            'stop_price'        : 99.99,
+            'parent_id'         : None,
+            'parent_type'       : None,
+            'duration_type'     : 'gtc',
+            'duration_datetime' : None,
+            'status'            : 'working',
+        },{
+            'id'                : '124',
+            'instrument'        : 'TestInst2',
+            'qty'               : 50.0,
+            'side'              : 'sell',
+            'type'              : 'market',
+            'filled_qty'        : 0.0,
+            'avg_price'         : None,
+            'limit_price'       : None,
+            'stop_price'        : 99.5,
+            'parent_id'         : None,
+            'parent_type'       : None,
+            'duration_type'     : 'gtt',
+            'duration_datetime' : 1034389.6,
+            'status'            : 'cancelled',
+        },{
+            'id'                : '125',
+            'instrument'        : 'TestInst2',
+            'qty'               : 5.0,
+            'side'              : 'buy',
+            'type'              : 'market',
+            'filled_qty'        : 0.0,
+            'avg_price'         : None,
+            'limit_price'       : None,
+            'stop_price'        : 99.5,
+            'parent_id'         : None,
+            'parent_type'       : None,
+            'duration_type'     : None,
+            'duration_datetime' : None,
+            'status'            : 'rejected',
+        }],
+    },
 }
