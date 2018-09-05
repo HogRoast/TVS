@@ -1,4 +1,5 @@
-from swagger_server.gateways.test_exchange import TestGwy, InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
+from swagger_server.gateways.test_exchange import TestGwy
+from swagger_server.gateways.gateway_errors import InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
 from swagger_server.test import BaseTestCase
 
 class TestTestExchangeGateway(BaseTestCase):

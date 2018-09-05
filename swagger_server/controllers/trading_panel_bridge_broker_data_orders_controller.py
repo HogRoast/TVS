@@ -1,7 +1,6 @@
 import connexion
 import six
 
-from swagger_server.gateways.gateway_factory import getGateway
 from swagger_server.models.bars_arrays import BarsArrays  # noqa: E501
 from swagger_server.models.inline_response200 import InlineResponse200  # noqa: E501
 from swagger_server.models.inline_response2001 import InlineResponse2001  # noqa: E501
@@ -27,6 +26,7 @@ from swagger_server import util
 from typing import List
 from swagger_server.models.status import Status
 from swagger_server.models.instrument import Instrument
+from swagger_server.gateways.gateway_factory import getGateway, getAllGateways, NoSuchEcnError
 
 def accounts_account_id_executions_get(accountId, instrument, maxCount=None):  # noqa: E501
     """accounts_account_id_executions_get
@@ -42,8 +42,14 @@ def accounts_account_id_executions_get(accountId, instrument, maxCount=None):  #
 
     :rtype: InlineResponse20010
     """
-    """ SHM - just a dummy response for now so we pass the unit tests... """
-    r = InlineResponse20010(Status.OK, None, list())
+
+    gwys = getAllGateways()
+    exes = list() 
+    for gwy in gwys:
+        gwy.connect()
+        exes.extend(gwy.getExecutions(accountId, instrument, maxCount))
+
+    r = InlineResponse20010(Status.OK, None, exes)
     return r
 
 def accounts_account_id_instruments_get(accountId):  # noqa: E501
@@ -57,8 +63,13 @@ def accounts_account_id_instruments_get(accountId):  # noqa: E501
     :rtype: InlineResponse20011
     """
     
-    """ SHM - first attempt at completing a stub... """
-    r = InlineResponse20011(Status.OK, None, list())
+    gwys = getAllGateways()
+    insts = list() 
+    for gwy in gwys:
+        gwy.connect()
+        insts.extend(gwy.getInstruments(accountId))
+
+    r = InlineResponse20011(Status.OK, None, insts)
     return r
 
 def accounts_account_id_orders_get(accountId):  # noqa: E501
@@ -71,7 +82,14 @@ def accounts_account_id_orders_get(accountId):  # noqa: E501
 
     :rtype: InlineResponse2004
     """
-    return 'do some magic for orders GET (bridge)!'
+    gwys = getAllGateways()
+    ords = list() 
+    for gwy in gwys:
+        gwy.connect()
+        ords.extend(gwy.getOrders(accountId))
+
+    r = InlineResponse2004(Status.OK, None, ords)
+    return r
 
 
 def accounts_account_id_orders_history_get(accountId, maxCount=None):  # noqa: E501
@@ -86,7 +104,14 @@ def accounts_account_id_orders_history_get(accountId, maxCount=None):  # noqa: E
 
     :rtype: InlineResponse2004
     """
-    return 'do some magic!'
+    gwys = getAllGateways()
+    ords = list() 
+    for gwy in gwys:
+        gwy.connect()
+        ords.extend(gwy.getHistoricalOrders(accountId, maxCount))
+
+    r = InlineResponse2004(Status.OK, None, ords)
+    return r
 
 
 def accounts_account_id_orders_order_id_delete(accountId, orderId):  # noqa: E501
@@ -101,7 +126,21 @@ def accounts_account_id_orders_order_id_delete(accountId, orderId):  # noqa: E50
 
     :rtype: InlineResponse2007
     """
-    return 'do some magic!'
+    splits = orderId.split(':', 1)
+    ecn = splits[0]
+    id_ = splits[1]
+
+    try:
+        gwy = getGateway(ecn)
+    except NoSuchEcnError as e:
+        return InlineResponse2007(Status.ERROR, e.msg)
+    gwy.connect()
+
+    cancelled = gwy.cancelOrder(accountId, id_)
+    if cancelled:
+        return InlineResponse2007(Status.OK, None)
+    else:
+        return InlineResponse2007(Status.ERROR, 'Failed to cancel order - ' + orderId)
 
 
 def accounts_account_id_orders_order_id_get(accountId, orderId):  # noqa: E501
@@ -116,7 +155,21 @@ def accounts_account_id_orders_order_id_get(accountId, orderId):  # noqa: E501
 
     :rtype: InlineResponse2006
     """
-    return 'do some magic!'
+    splits = orderId.split(':', 1)
+    ecn = splits[0]
+    id_ = splits[1]
+
+    try:
+        gwy = getGateway(ecn)
+    except NoSuchEcnError as e:
+        return InlineResponse2006(Status.ERROR, e.msg)
+    gwy.connect()
+
+    order = gwy.getOrder(accountId, id_)
+    if order:
+        return InlineResponse2006(Status.OK, None, order)
+    else:
+        return InlineResponse2006(Status.ERROR, 'Failed to get order - ' + orderId)
 
 
 def accounts_account_id_orders_order_id_put(accountId, orderId, qty, limitPrice=None, stopPrice=None, stopLoss=None, takeProfit=None, digitalSignature=None):  # noqa: E501
@@ -143,7 +196,21 @@ def accounts_account_id_orders_order_id_put(accountId, orderId, qty, limitPrice=
 
     :rtype: InlineResponse2007
     """
-    return 'do some magic!'
+    splits = orderId.split(':', 1)
+    ecn = splits[0]
+    id_ = splits[1]
+
+    try:
+        gwy = getGateway(ecn)
+    except NoSuchEcnError as e:
+        return InlineResponse2007(Status.ERROR, e.msg)
+    gwy.connect()
+
+    modified = gwy.modifyOrder(accountId, id_, qty, limitPrice, stopPrice, stopLoss, takeProfit, digitalSignature)
+    if modified:
+        return InlineResponse2007(Status.OK, None)
+    else:
+        return InlineResponse2007(Status.ERROR, 'Failed to modify order - ' + orderId)
 
 
 def accounts_account_id_orders_post(accountId, instrument, qty, side, type, limitPrice=None, stopPrice=None, durationType=None, durationDateTime=None, stopLoss=None, takeProfit=None, digitalSignature=None, requestId=None):  # noqa: E501
@@ -180,8 +247,22 @@ def accounts_account_id_orders_post(accountId, instrument, qty, side, type, limi
 
     :rtype: InlineResponse2005
     """
-    r = InlineResponse2005(Status.OK, None, InlineResponse2005D(101))
-    return r
+    splits = instrument.split(':', 1)
+    ecn = splits[0]
+    inst = splits[1]
+
+    try:
+        gwy = getGateway(ecn)
+    except NoSuchEcnError as e:
+        return InlineResponse2005(Status.ERROR, e.msg)
+    gwy.connect()
+
+    try:
+        orderId = gwy.createOrder(accountId, inst, qty, side, type, limitPrice, stopPrice, durationType, durationDateTime, stopLoss, takeProfit, digitalSignature, requestId)
+    except AccountPermissionError as e:
+        return InlineResponse2005(Status.ERROR, e.msg)
+
+    return InlineResponse2005(Status.OK, None, InlineResponse2005D(orderId))
 
 
 def accounts_account_id_positions_get(accountId):  # noqa: E501

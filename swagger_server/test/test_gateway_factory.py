@@ -11,7 +11,7 @@ class TestGatewayFactory(BaseTestCase):
     def test_getGateway_NoSuchECN(self):
         with self.assertRaises(NoSuchEcnError) as cm:
             getGateway('Nonsense')
-        self.assertEqual(cm.exception.message, 'No such gateway for ecn : Nonsense')
+        self.assertEqual(cm.exception.msg, 'No such gateway for ecn : Nonsense')
 
     def test_getGateway_SameInstance(self):
         x = getGateway('Binance')

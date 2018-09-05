@@ -1,20 +1,5 @@
+from swagger_server.gateways.gateway_errors import InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
 import configparser
-
-class InvalidSessionError(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-class InvalidAccountError(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-class AccountPermissionError(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-class OrderValidationError(Exception):
-    def __init__(self, msg):
-        self.msg = msg
 
 # decorator to ensure applicable methods have a valid session when called
 def connected(fn):
