@@ -46,7 +46,7 @@ def accounts_account_id_executions_get(accountId, instrument, maxCount=None):  #
     gwys = getAllGateways()
     exes = list() 
     for gwy in gwys:
-        gwy.connect()
+        gwy.establishSession()
         exes.extend(gwy.getExecutions(accountId, instrument, maxCount))
 
     r = InlineResponse20010(Status.OK, None, exes)
@@ -66,7 +66,7 @@ def accounts_account_id_instruments_get(accountId):  # noqa: E501
     gwys = getAllGateways()
     insts = list() 
     for gwy in gwys:
-        gwy.connect()
+        gwy.establishSession()
         insts.extend(gwy.getInstruments(accountId))
 
     r = InlineResponse20011(Status.OK, None, insts)
@@ -85,7 +85,7 @@ def accounts_account_id_orders_get(accountId):  # noqa: E501
     gwys = getAllGateways()
     ords = list() 
     for gwy in gwys:
-        gwy.connect()
+        gwy.establishSession()
         ords.extend(gwy.getOrders(accountId))
 
     r = InlineResponse2004(Status.OK, None, ords)
@@ -107,7 +107,7 @@ def accounts_account_id_orders_history_get(accountId, maxCount=None):  # noqa: E
     gwys = getAllGateways()
     ords = list() 
     for gwy in gwys:
-        gwy.connect()
+        gwy.establishSession()
         ords.extend(gwy.getHistoricalOrders(accountId, maxCount))
 
     r = InlineResponse2004(Status.OK, None, ords)
@@ -134,7 +134,7 @@ def accounts_account_id_orders_order_id_delete(accountId, orderId):  # noqa: E50
         gwy = getGateway(ecn)
     except NoSuchEcnError as e:
         return InlineResponse2007(Status.ERROR, e.msg)
-    gwy.connect()
+    gwy.establishSession()
 
     cancelled = gwy.cancelOrder(accountId, id_)
     if cancelled:
@@ -163,7 +163,7 @@ def accounts_account_id_orders_order_id_get(accountId, orderId):  # noqa: E501
         gwy = getGateway(ecn)
     except NoSuchEcnError as e:
         return InlineResponse2006(Status.ERROR, e.msg)
-    gwy.connect()
+    gwy.establishSession()
 
     order = gwy.getOrder(accountId, id_)
     if order:
@@ -204,7 +204,7 @@ def accounts_account_id_orders_order_id_put(accountId, orderId, qty, limitPrice=
         gwy = getGateway(ecn)
     except NoSuchEcnError as e:
         return InlineResponse2007(Status.ERROR, e.msg)
-    gwy.connect()
+    gwy.establishSession()
 
     modified = gwy.modifyOrder(accountId, id_, qty, limitPrice, stopPrice, stopLoss, takeProfit, digitalSignature)
     if modified:
@@ -255,7 +255,7 @@ def accounts_account_id_orders_post(accountId, instrument, qty, side, type, limi
         gwy = getGateway(ecn)
     except NoSuchEcnError as e:
         return InlineResponse2005(Status.ERROR, e.msg)
-    gwy.connect()
+    gwy.establishSession()
 
     try:
         orderId = gwy.createOrder(accountId, inst, qty, side, type, limitPrice, stopPrice, durationType, durationDateTime, stopLoss, takeProfit, digitalSignature, requestId)
@@ -444,7 +444,7 @@ def quotes_get(symbols):  # noqa: E501
 def streaming_get():  # noqa: E501
     """streaming_get
 
-    Stream of prices. Server constantly keeps the connection alive. If the connection is broken the server constantly tries to restore it. Transfer mode is &#39;chunked encoding&#39;. The data feed should set &#39;Transfer-Encoding: chunked&#39; and make sure that all intermediate proxies are set to use this mode. All messages are finished with &#39;\\n&#39;. Streaming data should contain real-time only. It shouldn&#39;t contain snapshots of data. # noqa: E501
+    Stream of prices. Server constantly keeps the connection alive. If the establishSessionion is broken the server constantly tries to restore it. Transfer mode is &#39;chunked encoding&#39;. The data feed should set &#39;Transfer-Encoding: chunked&#39; and make sure that all intermediate proxies are set to use this mode. All messages are finished with &#39;\\n&#39;. Streaming data should contain real-time only. It shouldn&#39;t contain snapshots of data. # noqa: E501
 
 
     :rtype: InlineResponse20014

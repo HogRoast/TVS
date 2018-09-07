@@ -1,13 +1,6 @@
-from swagger_server.gateways.gateway_errors import InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
+from swagger_server.gateways.base_gateway import established, InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
 import configparser
 
-# decorator to ensure applicable methods have a valid session when called
-def connected(fn):
-    def wrapper(*args, **kwargs):
-        if args[0].session:
-            return fn(*args, **kwargs)
-        raise InvalidSessionError('Not connected')
-    return wrapper
 
 class TestGwy:
     terminalOrderStates = ('rejected', 'filled', 'cancelled')
@@ -33,7 +26,7 @@ class TestGwy:
         self.numberFountains[fountain] = id_ + 1
         return id_
 
-    def connect(self):
+    def establishSession(self):
         if self.session:
             return
 
@@ -41,22 +34,25 @@ class TestGwy:
         self.session = eval(f.read())
         f.close()
 
-    @connected
-    def disconnect(self):
+    @established
+    def destroySession(self):
         self.session = None
 
-    @connected
+    @established
     def getAllInstruments(self):
         return self.session['instruments']
 
-    @connected
+    @established
     def getPermissions(self, accountId):
         try:
-            return self.session['permissions'][accountId]
+            if accountId in self.accounts:
+                return self.session['permissions'][accountId]
         except KeyError:
-            raise InvalidAccountError('Account - ' + accountId + ' - does not exist')
+            pass
 
-    @connected
+        raise InvalidAccountError('Account - ' + accountId + ' - does not exist')
+
+    @established
     def getInstruments(self, accountId):
         allInsts = self.getAllInstruments()
         permInsts = self.getPermissions(accountId)['instruments']
@@ -66,11 +62,11 @@ class TestGwy:
                 insts.append(allInsts[inst])
         return insts
 
-    @connected
+    @established
     def getExchangeInfo(self):
         return self.session['exchange_info']
 
-    @connected
+    @established
     def getExecutions(self, accountId, instrument, maxCount=None):
         exes = []
         cnt = 0
@@ -86,7 +82,7 @@ class TestGwy:
             pass
         return exes
 
-    @connected
+    @established
     def getOrders(self, accountId):
         ords = []
         try:
@@ -99,7 +95,7 @@ class TestGwy:
             pass
         return ords
 
-    @connected
+    @established
     def getOrder(self, accountId, orderId):
         try:
             userOrds = self.session['orders'][accountId]
@@ -110,7 +106,7 @@ class TestGwy:
             pass
         return None
 
-    @connected
+    @established
     def getHistoricalOrders(self, accountId, maxCount=None):
         ords = []
         cnt = 0
@@ -127,7 +123,7 @@ class TestGwy:
             pass
         return ords
 
-    @connected
+    @established
     def cancelOrder(self, accountId, orderId):
         ords = self.getOrders(accountId)
         for order in ords:
@@ -136,7 +132,7 @@ class TestGwy:
                 return True
         return False
 
-    @connected
+    @established
     def modifyOrder(self, accountId, orderId, qty, limitPrice=None, stopPrice=None, stopLoss=None, takeProfit=None, digitalSignature=None):
         # NOTE: digitialSignature, stopLoss and takeProfit are odd, as they
         # are not supported by the swagger Order class, leaving them here as 
@@ -154,7 +150,7 @@ class TestGwy:
                 return True
         return False
 
-    @connected
+    @established
     def createOrder(self, accountId, instrument, qty, side, type_, limitPrice=None, stopPrice=None, durationType=None, durationDateTime=None, stopLoss=None, takeProfit=None, digitalSignature=None, requestId=None):
         # See comment above regarding digitialSignature, stopLoss and takeProfit
         # Also, ignoring requestId for now.
