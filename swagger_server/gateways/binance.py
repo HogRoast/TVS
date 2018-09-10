@@ -1,11 +1,12 @@
 from swagger_server.gateways.base_gateway import established, getMillisecondTimestamp, InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
+import swagger_server.gateways.binance_mapping as BinanceMapping
 import configparser
 import requests
 import datetime
+import hmac
+import hashlib
 
 class BinanceGwy:
-    terminalOrderStates = ('rejected', 'filled', 'cancelled')
-    marketSides = ('buy', 'sell')
     validModes = ('trade', 'test')
 
     def __init__(self):
@@ -37,29 +38,11 @@ class BinanceGwy:
     def destroySession(self):
         self.session = None
 
-    def convertSymbolToInst(self, s):
-        i = {}
-        i['name'] = 'Binance:' + s['symbol']
-        i['description'] = 'Binance crypto currency pair, base asset  ' +s['baseAsset'] + ' vs quote asset ' + s['quoteAsset'] 
-        # Not clear to me how you can set the pip value without the rate
-        i['pip_value'] = 0.0
-        # Also the lot size is questionable
-        i['lot_size'] = 0.0
-        for f in s['filters']:
-            if f['filterType'] == 'PRICE_FILTER':
-                i['pip_size'] = float(f['tickSize'])
-                i['min_tick'] = float(f['tickSize'])
-            if f['filterType'] == 'LOT_SIZE':
-                i['min_qty'] = float(f['minQty'])
-                i['max_qty'] = float(f['maxQty'])
-                i['qty_step'] = float(f['stepSize'])
-        return i
-
     @established
     def getAllInstruments(self):
         insts = []
         for s in self.session['symbols']:
-            insts.append(self.convertSymbolToInst(s))
+            insts.append(BinanceMapping.b2tv_instrument(s))
         return insts
 
     @established
@@ -69,22 +52,99 @@ class BinanceGwy:
 
         raise InvalidAccountError('Account - ' + accountId + ' - does not exist')
 
+    def dictToRequestBody(self, dict_):
+        rb = ''
+        for (k, v) in dict_.items():
+            rb += str(k) + '=' + str(v) + '&'
+        return rb[:len(rb)-1]
+
+    def encodeMsg(self, data, signature):
+        return hmac.new(
+                bytes(signature, 'utf-8'), msg=bytes(data, 'utf-8'), 
+                digestmod=hashlib.sha256).hexdigest()
+
     @established
     def createOrder(self, accountId, instrument, qty, side, type_, limitPrice=None, stopPrice=None, durationType=None, durationDateTime=None, stopLoss=None, takeProfit=None, digitalSignature=None, requestId=None):
+
+        if accountId not in self.accounts:
+            raise InvalidAccountError('Account - ' + accountId + ' - does not exist')
+        apiKey = self.accounts[accountId]['api_key']
+        secretKey = self.accounts[accountId]['secret_key']
+
         url = '/api/v3/order/test'
         if self.mode == 'trade':
             url = '/api/v3/order'
 
-        r = requests.post(self.server + url, timeout=self.timeout,
-                data = {'symbol'        : convertInstrument(instrument),
-                        'side'          : convertSide(side),
-                        'type'          : convertType(type_),
-                        'timeInForce'   : convertDurationType(durationType),
-                        'quantity'      : qty,
-                        'price'         : limitPrice,
-                        'stopPrice'     : stopPrice,
-                        'recvWindow'    : self.recvWindow,
-                        'timestamp'     : getMillisecondTimestamp()
-                        })
+        hdrs = {'X-MBX-APIKEY': apiKey}
+        data = {    'symbol'        : BinanceMapping.tv2b_instName[instrument],
+                    'side'          : BinanceMapping.tv2b_side[side],
+                    'type'          : BinanceMapping.tv2b_type[type_],
+                    'timeInForce'   : BinanceMapping.tv2b_tif[durationType],
+                    'quantity'      : qty,
+                    'price'         : limitPrice,
+                    'stopPrice'     : stopPrice,
+                    'recvWindow'    : self.recvWindow,
+                    'timestamp'     : getMillisecondTimestamp()
+               } 
+        signature = self.encodeMsg(self.dictToRequestBody(data), secretKey)
+        data['signature'] = signature
+        r = requests.post(
+            self.server + url, timeout=self.timeout, headers=hdrs, data=data)
+
+        orderId = None
         if r.status_code == requests.codes.ok:
-            pass
+            response = r.json()
+            orderId = response['orderId']
+
+        return (r.status_code, orderId)
+
+    @established
+    def getOrders(self, accountId, instrument=None):
+        if accountId not in self.accounts:
+            raise InvalidAccountError('Account - ' + accountId + ' - does not exist')
+        apiKey = self.accounts[accountId]['api_key']
+        secretKey = self.accounts[accountId]['secret_key']
+        url = '/api/v3/openOrders'
+
+        hdrs = {'X-MBX-APIKEY'  : apiKey}
+        data = {    'recvWindow'    : self.recvWindow,
+                    'timestamp'     : getMillisecondTimestamp() }
+        if instrument:
+            data['symbol'] = BinanceMapping.tv2b_instName(instrument)
+
+        signature = self.encodeMsg(self.dictToRequestBody(data), secretKey)
+        data['signature'] = signature
+        r = requests.get(
+            self.server + url, timeout=self.timeout, headers=hdrs, data=data)
+
+        ords = []
+        if r.status_code == requests.codes.ok:
+            response = r.json()
+            for o in response:
+                ords.append(BinanceMapping.b2tv_order(o))
+        return ords        
+
+    @established
+    def getOrder(self, accountId, orderId):
+        if accountId not in self.accounts:
+            raise InvalidAccountError('Account - ' + accountId + ' - does not exist')
+        apiKey = self.accounts[accountId]['api_key']
+        secretKey = self.accounts[accountId]['secret_key']
+        url = '/api/v3/order'
+
+        hdrs = {'X-MBX-APIKEY'  : apiKey}
+        data = {    'symbol'        : BinanceMapping.tv2b_instName(instrument),
+                    'orderId'       : orderId,
+                    'recvWindow'    : self.recvWindow,
+                    'timestamp'     : getMillisecondTimestamp() }
+        signature = self.encodeMsg(self.dictToRequestBody(data), secretKey)
+        data['signature'] = signature
+        r = requests.get(
+            self.server + url, timeout=self.timeout, headers=hdrs, data=data)
+
+        order = None
+        if r.status_code == requests.codes.ok:
+            response = r.json()
+            order = BinanceMapping.b2tv_order(response)
+        return order        
+

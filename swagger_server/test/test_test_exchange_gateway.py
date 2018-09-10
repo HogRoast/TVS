@@ -8,7 +8,7 @@ class TestTestExchangeGateway(BaseTestCase):
         self.assertEqual(gwy.server, './swagger_server/test/test_exchange.dat')
         self.assertTrue('accountId_example' in gwy.accounts)
         self.assertTrue('api_key' in gwy.accounts['accountId_example'])
-        self.assertTrue('signature' in gwy.accounts['accountId_example'])
+        self.assertTrue('secret_key' in gwy.accounts['accountId_example'])
 
     def test_establishSession(self):
         gwy = TestGwy()
