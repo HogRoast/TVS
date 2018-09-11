@@ -8,7 +8,7 @@ class TestBinanceGateway(BaseTestCase):
     def test_initialisation(self):
         gwy = BinanceGwy()
         self.assertEqual(gwy.server, 'https://api.binance.com')
-        self.assertEqual(gwy.timeout, 3)
+        self.assertEqual(gwy.timeout, 5)
         self.assertEqual(gwy.recvWindow, 3000)
         self.assertEqual(gwy.mode, 'test')
         self.assertTrue('accountId_example' in gwy.accounts)
@@ -97,32 +97,16 @@ class TestBinanceGateway(BaseTestCase):
     def test_createOrder(self):
         gwy = BinanceGwy()
         gwy.establishSession()
-        id_ = gwy.createOrder('accountId_example', 'TestInst1', 12.0, 'buy', 'limit', 112.12, 112.0, 'gtc')
-        self.assertEqual(id_[0], 123)
+        self.assertTrue(gwy.inTestMode())
+        id_ = gwy.createOrder('accountId_example', 'TestInst1', 1.0, 'buy', 'limit', 0.008317, durationType='gtc')
+        self.assertEqual(id_, 'TEST_ID')
         self.assertFalse(id_ is None)
-        order = gwy.getOrder('accountId_example', id_)
-        self.assertFalse(order is None)
-        '''
-        self.assertEqual(order['id'], '126')
-        self.assertEqual(order['instrument'], 'TestInst1')
-        self.assertEqual(order['qty'], 12.0)
-        self.assertEqual(order['side'], 'buy')
-        self.assertEqual(order['type'], 'limit')
-        self.assertEqual(order['filled_qty'], 0.0)
-        self.assertEqual(order['avg_price'], None)
-        self.assertEqual(order['limit_price'], 112.12)
-        self.assertEqual(order['stop_price'], 112.0)
-        self.assertEqual(order['parent_id'], None)
-        self.assertEqual(order['parent_type'], None)
-        self.assertEqual(order['duration_type'], 'gtt')
-        self.assertEqual(order['duration_datetime'], 1002322.1)
-        self.assertEqual(order['status'], 'placing')
-        '''
 
     def test_createOrder_NotEstablished(self):
         gwy = BinanceGwy()
+        self.assertTrue(gwy.inTestMode())
         with self.assertRaises(InvalidSessionError) as cm:
-            id_ = gwy.createOrder('accountId_example', 'BTCETH', 12.0, 'buy', 'limit', 112.12, 112.0, 'gtc')
+            id_ = gwy.createOrder('accountId_example', 'TestInst1', 1.0, 'buy', 'limit', 0.008317, durationType='gtc')
         self.assertEqual(cm.exception.msg, 'Session not established')
 
 

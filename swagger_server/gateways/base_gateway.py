@@ -1,4 +1,4 @@
-import datetime
+import time
 
 '''''
 Gateway Errors...
@@ -44,18 +44,5 @@ def established(fn):
         raise InvalidSessionError('Session not established')
     return wrapper
 
-def getMillisecondTimestamp(now_=None, today=None):
-    ''' 
-        Returns milliscond timestamp since midnight today,
-        optional now_ & today parameters facilitate testing
-    '''
-    if today is None:
-        tmp = datetime.datetime.utcnow()
-        today = datetime.datetime(tmp.year, tmp.month, tmp.day)
-    ts = datetime.datetime.utcnow() - today
-    if now_:
-        ts = now_ - today
-    ms = 0
-    ms += ts.seconds * 1000
-    ms += int(ts.microseconds / 1000)
-    return ms
+def getMillisecondTimestamp():
+    return int(time.time() * 1000)

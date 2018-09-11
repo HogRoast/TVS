@@ -17,7 +17,7 @@ class BinanceGwy:
         connDetails = self.config['connection.details']
         self.server = connDetails['server']
         self.recvWindow = connDetails.getint('recv_window', fallback=3000)
-        self.timeout = connDetails.getint('timeout', fallback=3)
+        self.timeout = connDetails.getint('timeout', fallback=5)
         self.mode = connDetails.get('mode', fallback='test')
         if self.mode not in BinanceGwy.validModes:
             self.mode = 'test'
@@ -26,6 +26,9 @@ class BinanceGwy:
         for account in self.config['account.details']:
             self.accounts[account] = eval(self.config['account.details'][account])
         self.session = None
+
+    def inTestMode(self):
+        return self.mode == 'test'
 
     def establishSession(self):
         r = requests.get(self.server + '/api/v1/exchangeInfo', timeout=self.timeout)
@@ -82,7 +85,6 @@ class BinanceGwy:
                     'timeInForce'   : BinanceMapping.tv2b_tif[durationType],
                     'quantity'      : qty,
                     'price'         : limitPrice,
-                    'stopPrice'     : stopPrice,
                     'recvWindow'    : self.recvWindow,
                     'timestamp'     : getMillisecondTimestamp()
                } 
@@ -90,13 +92,19 @@ class BinanceGwy:
         data['signature'] = signature
         r = requests.post(
             self.server + url, timeout=self.timeout, headers=hdrs, data=data)
+        print('******** SHM ********')
+        print(r.url)
+        print(r.status_code)
+        print(r.text)
+        print('******** SHM ********')
 
         orderId = None
         if r.status_code == requests.codes.ok:
+            if self.mode == 'test':
+                return 'TEST_ID'
             response = r.json()
             orderId = response['orderId']
-
-        return (r.status_code, orderId)
+        return orderId
 
     @established
     def getOrders(self, accountId, instrument=None):
