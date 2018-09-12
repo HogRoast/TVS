@@ -1,5 +1,5 @@
 from swagger_server.gateways.base_gateway import established, getMillisecondTimestamp, InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
-import swagger_server.gateways.binance_mapping as BinanceMapping
+import swagger_server.gateways.binance.mapping as BinanceMapping
 import configparser
 import requests
 import datetime
@@ -13,7 +13,7 @@ class BinanceGwy:
         self.config = configparser.RawConfigParser()
         # overriding optionxform to ensure case sensitivity in config keys
         self.config.optionxform = lambda option : option
-        self.config.read('./swagger_server/gateways/binance.ini')
+        self.config.read('./swagger_server/gateways/binance/binance.ini')
         connDetails = self.config['connection.details']
         self.server = connDetails['server']
         self.recvWindow = connDetails.getint('recv_window', fallback=3000)

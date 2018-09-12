@@ -12,7 +12,7 @@ class TestGwy:
         self.config = configparser.RawConfigParser()
         # overriding optionxform to ensure case sensitivity in config keys
         self.config.optionxform = lambda option : option
-        self.config.read('./swagger_server/gateways/test_exchange.ini')
+        self.config.read('./swagger_server/gateways/test_ex/test_exchange.ini')
         self.server = self.config['connection.details']['server']
         self.accounts = {}
         for account in self.config['account.details']:

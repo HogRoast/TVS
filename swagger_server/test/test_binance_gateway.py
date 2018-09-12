@@ -1,5 +1,5 @@
 from swagger_server.gateways.base_gateway import InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
-from swagger_server.gateways.binance import BinanceGwy
+from swagger_server.gateways.binance.gateway import BinanceGwy
 from swagger_server.test import BaseTestCase
 import datetime
 import requests

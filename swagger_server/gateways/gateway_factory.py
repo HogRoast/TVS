@@ -1,5 +1,5 @@
-from swagger_server.gateways.binance import BinanceGwy
-from swagger_server.gateways.test_exchange import TestGwy
+from swagger_server.gateways.binance.gateway import BinanceGwy
+from swagger_server.gateways.test_ex.gateway import TestGwy
 
 # Map contains ecn keys with a value that is a list of gateway class and
 # gateway instance. The instance is None to begin with and is created on
