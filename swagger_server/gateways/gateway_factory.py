@@ -6,8 +6,8 @@ from swagger_server.gateways.test_ex.gateway import TestGwy
 # first call to getGateway for the specific ecn. Subsequent calls to getGateway
 # return the same instance.
 ecnMap =    { 
-                'Binance'   : [BinanceGwy, None],
-                #'TestEx'    : [TestGwy, None] 
+                #'Binance'   : [BinanceGwy, None],
+                'TestEx'    : [TestGwy, None] 
             }
 
 class NoSuchEcnError(Exception):

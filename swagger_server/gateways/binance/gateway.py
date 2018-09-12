@@ -1,4 +1,4 @@
-from swagger_server.gateways.base_gateway import established, getMillisecondTimestamp, InvalidSessionError, InvalidAccountError, AccountPermissionError, OrderValidationError
+from swagger_server.gateways.base_gateway import * 
 import swagger_server.gateways.binance.mapping as BinanceMapping
 import configparser
 import requests
@@ -27,15 +27,29 @@ class BinanceGwy:
             self.accounts[account] = eval(self.config['account.details'][account])
         self.session = None
 
+    def serverRequest(self, request, url, hdrs=None, data=None):
+        r = request(
+            self.server + url, timeout=self.timeout, headers=hdrs, data=data)
+
+        print('******** SHM ********')
+        print(r.url)
+        print(r.status_code)
+        print(r.text)
+        print('******** SHM ********')
+
+        if r.status_code != requests.codes.ok:
+            raise ServerRequestError(r.status_code, r.text)
+        return r
+
     def inTestMode(self):
         return self.mode == 'test'
 
     def establishSession(self):
-        r = requests.get(self.server + '/api/v1/exchangeInfo', timeout=self.timeout)
-        if r.status_code == requests.codes.ok:
+        try:
+            r = self.serverRequest(requests.get,  '/api/v1/exchangeInfo')
             self.session = r.json()
-        else:
-            raise InvalidSessionError('Could not establish session: ' + r.status_code)
+        except ServerRequestError as e:
+            raise InvalidSessionError('Could not establish session: ' + e.msg)
 
     @established
     def destroySession(self):
@@ -90,21 +104,16 @@ class BinanceGwy:
                } 
         signature = self.encodeMsg(self.dictToRequestBody(data), secretKey)
         data['signature'] = signature
-        r = requests.post(
-            self.server + url, timeout=self.timeout, headers=hdrs, data=data)
-        print('******** SHM ********')
-        print(r.url)
-        print(r.status_code)
-        print(r.text)
-        print('******** SHM ********')
 
-        orderId = None
-        if r.status_code == requests.codes.ok:
-            if self.mode == 'test':
-                return 'TEST_ID'
-            response = r.json()
-            orderId = response['orderId']
+        r = self.serverRequest(requests.post, url, hdrs, data)
+
+        if self.mode == 'test':
+            return 'TEST_ID'
+
+        response = r.json()
+        orderId = response['orderId']
         return orderId
+
 
     @established
     def getOrders(self, accountId, instrument=None):
@@ -115,21 +124,26 @@ class BinanceGwy:
         url = '/api/v3/openOrders'
 
         hdrs = {'X-MBX-APIKEY'  : apiKey}
-        data = {    'recvWindow'    : self.recvWindow,
-                    'timestamp'     : getMillisecondTimestamp() }
+        data = {'recvWindow'    : self.recvWindow,
+                'timestamp'     : getMillisecondTimestamp() }
         if instrument:
             data['symbol'] = BinanceMapping.tv2b_instName(instrument)
 
         signature = self.encodeMsg(self.dictToRequestBody(data), secretKey)
         data['signature'] = signature
-        r = requests.get(
-            self.server + url, timeout=self.timeout, headers=hdrs, data=data)
+
+        try:
+            r = self.serverRequest(requests.get, url, hdrs, data)
+        except ServerRequestError as e:
+            # Binance appears to return a 403 if there are no orders available
+            if e.errorCode == 403:
+                return []
+            raise e
 
         ords = []
-        if r.status_code == requests.codes.ok:
-            response = r.json()
-            for o in response:
-                ords.append(BinanceMapping.b2tv_order(o))
+        response = r.json()
+        for o in response:
+            ords.append(BinanceMapping.b2tv_order(o))
         return ords        
 
     @established
@@ -147,12 +161,10 @@ class BinanceGwy:
                     'timestamp'     : getMillisecondTimestamp() }
         signature = self.encodeMsg(self.dictToRequestBody(data), secretKey)
         data['signature'] = signature
-        r = requests.get(
-            self.server + url, timeout=self.timeout, headers=hdrs, data=data)
 
-        order = None
-        if r.status_code == requests.codes.ok:
-            response = r.json()
-            order = BinanceMapping.b2tv_order(response)
+        r = self.serverRequest(requests.get, url, hdrs, data)
+
+        response = r.json()
+        order = BinanceMapping.b2tv_order(response)
         return order        
 

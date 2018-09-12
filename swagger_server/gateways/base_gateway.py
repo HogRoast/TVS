@@ -32,6 +32,14 @@ class OrderValidationError(Exception):
         self.msg = msg
 
 '''''
+Server request failure
+'''''
+class ServerRequestError(Exception):
+    def __init__(self, errorCode, msg):
+        self.errorCode = errorCode
+        self.msg = msg
+
+'''''
 Gateway Ops...
 '''''
 def established(fn):
