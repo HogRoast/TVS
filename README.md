@@ -11,9 +11,9 @@ This example uses the [Connexion](https://github.com/zalando/connexion) library 
 Python 3.5.2+
 
 ## Setup
-This server is configured out of the box to connect to a default test exchange 'TestEx', this is an implementation of the base_gateway class that simply directs all requests to read or modify data to a flat file 'test_exchange.dat'.
+This server is configured out of the box to connect to a default test exchange 'TestEx', this is an implementation of the base_gateway class that simply directs all requests to read or modify data in the flat file 'swagger_server/test/test_exchange.dat'.
 
-Also, included in this package is a nascent implementation of a Binance Gateway, currently (12th Sep 2018) this implementation allows for the creation and retrieval of orders and not much else. To achieve this you will need to do a couple of things...
+Also, included in this package is a nascent implementation of a Binance Gateway, currently (12th Sep 2018) this implementation allows for the creation and retrieval of orders and not much else. To enable this gateway you will need to do a few things...
 
 1. Modify the ecnMap within gateway_factory.py module; uncomment the 'Binance' entry in the map and comment out the 'TestEx' entry. 
 
@@ -21,7 +21,7 @@ Also, included in this package is a nascent implementation of a Binance Gateway,
 
 Once these two steps are complete the server will now direct all requests to the Binance exchange.
 
-Final point to note: the Binance gateway defaults to 'test' mode, i.e. if you try and create an order it will not be directed to the matching engine at Binance but will simply verify the request and return blank. To run in full trading mode modify the binance.ini file to include a 'mode = trade' entry under connection.details. [CAVEAT EMPTOR! YOU WILL NOW BE PLACING LIVE ORDERS ON BINANCE, BE CAREFUL!]
+Final point to note: the Binance gateway defaults to 'test' mode, i.e. if you try and create an order it will not be directed to the matching engine at Binance but will simply verify the request and return blank. To run in full trading mode modify the binance.ini file to include a 'mode = trade' entry under connection.details. **CAVEAT EMPTOR! YOU WILL NOW BE PLACING LIVE ORDERS ON BINANCE, BE CAREFUL!**
 
 ## Usage
 To run the server, please execute the following from the root directory:
