@@ -89,6 +89,10 @@ class BinanceGwy:
         secretKey = self.accounts[accountId]['secret_key']
 
         url = '/api/v3/order/test'
+        # !!!!
+        # BEWARE WHEN ENGAGING TRADE MODE! YOU CAN NOW PLACE LIVE ORDERS AT
+        # BINANCE
+        # !!!!
         if self.mode == 'trade':
             url = '/api/v3/order'
 
