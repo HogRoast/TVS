@@ -1,10 +1,10 @@
 ---
 swagger: "2.0"
 info:
-  description: ""
-  version: ""
+  description: "TradingView REST API"
+  version: "1.0"
   title: "TradingView REST API Specification for Brokers"
-host: "rest-demo.tradingview.com"
+host: "localhost:8080"
 basePath: "/tradingview/v1/"
 tags:
 - name: "Trading Panel bridge (broker data & orders)"
@@ -1773,7 +1773,7 @@ definitions:
         $ref: "#/definitions/SingleQuote"
     description: "Price response for an instrument."
     example:
-      s: null
+      s: {}
       v:
         volume: 2.027123023002321833274663731572218239307403564453125
         lp: 1.46581298050294517310021547018550336360931396484375
@@ -2328,7 +2328,7 @@ definitions:
     example:
       s: {}
       d:
-      - s: null
+      - s: {}
         v:
           volume: 2.027123023002321833274663731572218239307403564453125
           lp: 1.46581298050294517310021547018550336360931396484375
@@ -2341,7 +2341,7 @@ definitions:
           low_price: 9.301444243932575517419536481611430644989013671875
           prev_close_price: 3.61607674925191080461672754609026014804840087890625
         n: "n"
-      - s: null
+      - s: {}
         v:
           volume: 2.027123023002321833274663731572218239307403564453125
           lp: 1.46581298050294517310021547018550336360931396484375
