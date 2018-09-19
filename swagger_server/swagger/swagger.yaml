@@ -7,7 +7,7 @@ info:
 host: "localhost:8080"
 basePath: "/tradingview/v1/"
 tags:
-- name: "Trading Panel bridge (broker data & orders)"
+- name: "Trading Panel bridge (broker data and orders)"
   description: ""
 - name: "Trading Panel bridge (orders only)"
   description: ""
@@ -23,7 +23,7 @@ paths:
   /authorize:
     post:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       description: "Oauth2 Password authorization."
       operationId: "authorize_post"
@@ -54,7 +54,7 @@ paths:
   /config:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get localized configuration."
@@ -100,7 +100,7 @@ paths:
   /accounts:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get a list of accounts owned by the user."
@@ -117,7 +117,7 @@ paths:
   /accounts/{accountId}/state:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get account information."
@@ -168,7 +168,7 @@ paths:
   /accounts/{accountId}/orders:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get pending orders for an account."
@@ -190,7 +190,7 @@ paths:
       x-swagger-router-controller: "swagger_server.controllers.trading_panel_bridge_broker_data_orders_controller"
     post:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Create a new order."
@@ -282,7 +282,7 @@ paths:
   /accounts/{accountId}/ordersHistory:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get order history for an account. It is expected that returned\
@@ -312,7 +312,7 @@ paths:
   /accounts/{accountId}/orders/{orderId}:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get an order for an account. It can be an active or historical\
@@ -339,7 +339,7 @@ paths:
       x-swagger-router-controller: "swagger_server.controllers.trading_panel_bridge_broker_data_orders_controller"
     put:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Modify an existing order."
@@ -395,7 +395,7 @@ paths:
       x-swagger-router-controller: "swagger_server.controllers.trading_panel_bridge_broker_data_orders_controller"
     delete:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Cancel an existing order."
@@ -422,7 +422,7 @@ paths:
   /accounts/{accountId}/positions:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get positions for an account."
@@ -444,7 +444,7 @@ paths:
   /accounts/{accountId}/positions/{positionId}:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get a position for an account."
@@ -470,7 +470,7 @@ paths:
       x-swagger-router-controller: "swagger_server.controllers.trading_panel_bridge_broker_data_orders_controller"
     put:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Modify an existing position stop loss or take profit or both."
@@ -506,7 +506,7 @@ paths:
       x-swagger-router-controller: "swagger_server.controllers.trading_panel_bridge_broker_data_orders_controller"
     delete:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Close an existing position."
@@ -533,7 +533,7 @@ paths:
   /accounts/{accountId}/executions:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get a list of executions (i.e. fills or trades) for an account\
@@ -566,7 +566,7 @@ paths:
   /accounts/{accountId}/instruments:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get a list of tradeable instruments that are available for trading\
@@ -589,7 +589,7 @@ paths:
   /mapping:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       description: "Return all broker instruments with corresponding TradingView instruments.\
         \ It is required to add a Broker to TradingView.com. It is not required for\
@@ -605,7 +605,7 @@ paths:
   /symbol_info:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Terminal integration"
       description: "Get a list of all instruments."
       operationId: "symbol_info_get"
@@ -621,7 +621,7 @@ paths:
   /history:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Terminal integration"
       description: "Bars request. You can find examples in the [documentation](https://github.com/tradingview/charting_library/wiki/UDF#bars)."
       operationId: "history_get"
@@ -752,7 +752,7 @@ paths:
   /quotes:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get current prices of the instrument. You can see an example of\
@@ -775,7 +775,7 @@ paths:
   /depth:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       - "Trading Panel bridge (orders only)"
       - "Trading Terminal integration"
       description: "Get current depth of market for the instrument. Optional."
@@ -797,7 +797,7 @@ paths:
   /streaming:
     get:
       tags:
-      - "Trading Panel bridge (broker data & orders)"
+      - "Trading Panel bridge (broker data and orders)"
       description: "Stream of prices. Server constantly keeps the connection alive.\
         \ If the connection is broken the server constantly tries to restore it. Transfer\
         \ mode is 'chunked encoding'. The data feed should set 'Transfer-Encoding:\
